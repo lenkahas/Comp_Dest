@@ -1,4 +1,4 @@
-import pandas, geopandas, io
+import pandas, geopandas, io, numpy
 from sklearn import metrics
 
 
@@ -31,7 +31,7 @@ def flows(n_hubs=None, seed=2478879):
     # where $h_i$ and $h_j$ are the "hubbiness" of the two places.
     # Each mass $$m_i \sim poisson(h_i*100000)$$
 
-    flows["flow"] = numpy.random.poisson(
+    flows["weight"] = numpy.random.poisson(
         flows.merge(
             points[["ID_code", "hubscore"]], left_on="origin", right_on="ID_code"
         )
