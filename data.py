@@ -61,10 +61,13 @@ def flows(n_hubs=None, seed=2478879):
 
 def toy():
     df = """origin,destination,distance,mass_destination,mass_origin,weight
-a,b,2,25,60,0
-b,a,2,60,25,5
 a,a,0,60,60,80
-c,b,20,25,30,10
+a,b,2,25,60,0
+a,c,10,30,60,2
+b,a,2,60,25,5
+b,b,0,25,25,0
 b,c,20,30,25,7
-a,c,10,30,60,2"""
+c,a,10,60,30,0
+c,b,20,25,30,10
+c,c,0,30,30,0"""
     return pandas.read_csv(io.StringIO(df))
