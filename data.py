@@ -3,6 +3,7 @@ from sklearn import metrics
 
 
 def flows(n_hubs=None, seed=2478879):
+    numpy.random.seed(seed)
     points = geopandas.read_file("./points.geojson")
 
     if n_hubs is not None:
@@ -22,10 +23,10 @@ def flows(n_hubs=None, seed=2478879):
         .rename(columns=dict(ID_code="origin", value="distance"))
     )
 
-    points["hubscore"] = numpy.random.exponential(size=points.shape[0])
+    points["hubscore"] = numpy.random.exponential(size=points.shape[0]).astype(float)
     points["mass"] = numpy.random.poisson(
         points.hubscore * 100000, size=points.shape[0]
-    )
+    ).astype(float)
 
     # each flow is $$f_{ij} \sim poisson\left(\frac{1000h_ih_j}{(100d_{ij})^2 + 100}\right)$$
     # where $h_i$ and $h_j$ are the "hubbiness" of the two places.
@@ -42,7 +43,7 @@ def flows(n_hubs=None, seed=2478879):
             suffixes=("_origin", "_destination"),
         )
         .eval("10000*hubscore_origin*hubscore_destination/((100 * distance)**2+100)")
-    )
+    ).astype(float)
 
     complete_flows = (
         flows.merge(points[["ID_code", "mass"]], left_on="origin", right_on="ID_code")
@@ -55,7 +56,6 @@ def flows(n_hubs=None, seed=2478879):
         )
     ).drop("ID_code", axis=1)
 
-    numpy.random.seed(seed)
     return complete_flows.sample(frac=0.9, replace=False)
 
 
