@@ -2,9 +2,15 @@ import numpy, pandas
 import data
 from sklearn.preprocessing import LabelEncoder
 
+try:
+    from numba import njit
+except ImportError:
 
-from numba import njit, prange
-from joblib import Parallel, delayed
+    def njit(fastmath):
+        def decroator(func):
+            return func
+
+        return decorator
 
 
 def access_numba(flows, filter_flow=False, n_jobs=-1):
@@ -22,17 +28,6 @@ def access_numba(flows, filter_flow=False, n_jobs=-1):
     all_masses[flows.dcode] = flows.mass_destination
     assert (all_masses >= 0).all()
 
-    # accs = _access_numba(
-    #    flows.ocode.values,
-    #    flows.dcode.values,
-    #    all_masses,
-    #    flows.weight.values if filter_flow else numpy.ones_like(flows.weight.values),
-    #    flows.distance.values,
-    # )
-
-    engine = Parallel()
-    promise = delayed(_access_numba_i)
-
     fakeflows = numpy.ones_like(flows.weight.values)
     if n_jobs == 1:
         accs = _access_numba(
@@ -43,6 +38,10 @@ def access_numba(flows, filter_flow=False, n_jobs=-1):
             flows.distance.values,
         )
     else:
+        from joblib import Parallel, delayed
+
+        engine = Parallel()
+        promise = delayed(_access_numba_i)
         accs = engine(
             promise(
                 i,
