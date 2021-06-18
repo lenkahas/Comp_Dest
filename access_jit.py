@@ -6,7 +6,7 @@ try:
 except ImportError:
 
     def njit(fastmath):
-        def decroator(func):
+        def decorator(func):
             return func
 
         return decorator
