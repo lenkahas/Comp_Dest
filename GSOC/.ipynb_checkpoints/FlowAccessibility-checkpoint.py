@@ -79,7 +79,7 @@ def test(function):
     flow = flow.loc[:,['origin_ID', 'destination_ID','distances', 'volume_in_unipartite','dest_masses','results_all=False']]
     
     # apply accessibility to all data
-    flow['acc_uni'] = Accessibility(flow_df = flow, all_destinations=False, function = AFED)
+    flow['acc_uni'] = Accessibility(flow_df = flow, all_destinations=False, function = function)
     
     # check the results
     if (flow['results_all=False'] == flow['acc_uni']).all() == True:
